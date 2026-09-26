@@ -5,7 +5,7 @@
 <label>عدد من يحق لهم الاقتراع</label><input id="eligible" class="fixed" value="2970000" readonly>
 <label>نسبة التصويت %</label><input id="turnoutPct" class="editable" type="text" inputmode="decimal" value="0" style="direction:ltr">
 <label>عدد المصوتين حسب النسبة</label><input id="turnout" class="ro" readonly>
-<label>نسبة الأوراق البيضاء واللاغية %</label><input id="badPct" class="editable" type="number" min="0" max="100" step="0.01" placeholder="أدخل النسبة أو العدد">
+<label>نسبة الأوراق البيضاء واللاغية %</label><input id="badPct" class="editable" type="text" inputmode="decimal" lang="en" dir="ltr" style="direction:ltr;text-align:center" placeholder="أدخل النسبة أو العدد">
 <label>عدد الأوراق البيضاء واللاغية</label><input id="badCount" class="editable" type="text" inputmode="numeric" pattern="[0-9]*" lang="en" dir="ltr" style="direction:ltr;text-align:center" placeholder="أدخل العدد أو النسبة">
 <label style="color:#c62828;font-weight:700">عدد الأصوات الصحيحة</label><input id="valid" class="ro" readonly style="color:#c62828;font-weight:700">
 <label>نسبة الحسم %</label><input class="fixed" value="1" readonly>
@@ -22,7 +22,7 @@ for(var i=1;i<=30;i++){var r=document.createElement('tr');r.innerHTML='<td>'+i+'
 function e(x){return document.getElementById(x)} function asciiDigits(v){return String(v).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)}).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)})} function turnout(){return Math.round((+e('eligible').value||0)*(+e('turnoutPct').value||0)/100)}
 function fromPct(){var t=turnout();if(e('badPct').value===''){if(source==='pct')e('badCount').value='';return}e('badCount').value=Math.round(t*(+e('badPct').value||0)/100)}
 function fromCount(){var t=turnout();if(e('badCount').value===''){if(source==='count')e('badPct').value='';return}e('badPct').value=t?((+e('badCount').value||0)/t*100).toFixed(4).replace(/\.?0+$/,''):0}
-e('turnoutPct').oninput=function(){if(source==='pct')fromPct();else if(source==='count')fromCount();calc()};e('badPct').oninput=function(){source=this.value===''?'none':'pct';fromPct();calc()};e('badCount').oninput=function(){this.value=asciiDigits(this.value).replace(/[^0-9]/g,'');source=this.value===''?'none':'count';fromCount();calc()};
+e('turnoutPct').oninput=function(){if(source==='pct')fromPct();else if(source==='count')fromCount();calc()};e('badPct').oninput=function(){var v=asciiDigits(this.value).replace(/[٫,]/g,'.').replace(/[^0-9.]/g,'');var p=v.split('.');if(p.length>2)v=p.shift()+'.'+p.join('');if(+v>100)v='100';this.value=v;source=this.value===''?'none':'pct';fromPct();calc()};e('badCount').oninput=function(){this.value=asciiDigits(this.value).replace(/[^0-9]/g,'');source=this.value===''?'none':'count';fromCount();calc()};
 document.querySelectorAll('.votes,.lname').forEach(function(x){x.oninput=calc});
 function clearVotes(){document.querySelectorAll('.votes').forEach(function(x){x.value=''});calc()}
 function calc(){var t=turnout();e('turnout').value=ni.format(t);var bad=Math.max(0,+e('badCount').value||0);if(bad>t)bad=t;var valid=Math.max(0,t-bad);e('valid').value=ni.format(valid);var th=valid*.01;e('threshold').value=nf.format(th);e('badStat').textContent=ni.format(bad)+' ('+(t?(bad/t*100).toFixed(2):'0.00')+'%)';
